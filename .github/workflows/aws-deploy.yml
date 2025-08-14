@@ -1,0 +1,48 @@
+name: AWS Deploy
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push PHP image
+        run: |
+          docker build -f docker/php/Dockerfile.prod -t ${{ secrets.ECR_PHP_REPO }}:latest .
+          docker push ${{ secrets.ECR_PHP_REPO }}:latest
+
+      - name: Build & push Nginx image
+        run: |
+          docker build -f docker/nginx/conf.d/../Dockerfile -t ${{ secrets.ECR_NGINX_REPO }}:latest docker/nginx || true
+          # w tym przykładzie korzystamy z obrazu nginx:alpine w ECS; jeśli masz własny Dockerfile dla nginx, podmień ścieżkę i usuń "|| true"
+          echo "Using nginx:alpine on ECS"
+
+      - name: Register task definition
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://infra/ecs-taskdef.json
+
+      - name: Update service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ secrets.ECS_SERVICE }} \
+            --force-new-deployment

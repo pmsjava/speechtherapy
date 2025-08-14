@@ -1,0 +1,29 @@
+parameters:
+  locale: 'pl'
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\:
+    resource: '../src/*'
+    exclude: '../src/{DependencyInjection,Entity,Kernel.php,Tests}'
+
+  App\Controller\:
+    resource: '../src/Controller'
+    tags: ['controller.service_arguments']
+
+  # Event listener globalnego wyjątku (jeśli nie zadziała autoconfigure)
+  App\EventListener\ExceptionListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+  # Listener eventów domenowych
+  App\EventListener\AppointmentCreatedListener:
+    tags:
+      - { name: 'kernel.event_listener', event: 'appointment.created', method: 'onAppointmentCreated' }
+
+  App\EventListener\ClientRegisteredListener:
+    tags:
+      - { name: 'kernel.event_listener', event: 'client.registered', method: 'onClientRegistered' }

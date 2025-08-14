@@ -1,0 +1,10 @@
+framework:
+  secret: '%env(APP_SECRET)%'
+  csrf_protection: true
+  session:
+    handler_id: null
+  router:
+    utf8: true
+  annotations: true
+  serializer: { enabled: true }
+  validation: { enable_annotations: true }

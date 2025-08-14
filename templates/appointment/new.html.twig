@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Umów spotkanie{% endblock %}
+{% block body %}
+<h1>Umów spotkanie</h1>
+
+{% for label, messages in app.flashes %}
+  {% for message in messages %}
+    <div class="alert alert-{{ label }}">{{ message }}</div>
+  {% endfor %}
+{% endfor %}
+
+{{ form_start(form) }}
+  {{ form_widget(form) }}
+  <button class="btn btn-primary mt-2">Zarezerwuj</button>
+{{ form_end(form) }}
+{% endblock %}

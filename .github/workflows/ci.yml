@@ -1,0 +1,48 @@
+name: CI
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: logopedia_db_test
+          MYSQL_USER: symfony
+          MYSQL_PASSWORD: symfony
+        ports:
+          - 33306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -psymfony"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          coverage: none
+          extensions: pdo_mysql, intl, zip
+
+      - name: Install Composer deps
+        run: composer install --no-interaction
+
+      - name: JWT keys
+        run: php bin/console lexik:jwt:generate-keypair
+
+      - name: Migrate
+        env:
+          DATABASE_URL: "mysql://symfony:symfony@127.0.0.1:33306/logopedia_db_test?serverVersion=5.7"
+        run: php bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Run tests
+        env:
+          DATABASE_URL: "mysql://symfony:symfony@127.0.0.1:33306/logopedia_db_test?serverVersion=5.7"
+        run: vendor/bin/phpunit

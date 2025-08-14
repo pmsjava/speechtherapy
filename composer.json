@@ -1,0 +1,48 @@
+{
+    "name": "you/symfony-logopeda",
+    "type": "project",
+    "require": {
+      "php": "^8.0",
+      "ext-ctype": "*",
+      "ext-iconv": "*",
+      "symfony/framework-bundle": "5.4.*",
+      "symfony/orm-pack": "*",
+      "symfony/security-bundle": "5.4.*",
+      "symfony/twig-bundle": "5.4.*",
+      "symfony/validator": "5.4.*",
+      "symfony/serializer-pack": "*",
+      "symfony/monolog-bundle": "^3.7",
+      "nelmio/api-doc-bundle": "^4.7",
+      "lexik/jwt-authentication-bundle": "^2.20",
+      "doctrine/doctrine-migrations-bundle": "^3.6",
+      "symfony/rate-limiter": "^5.4",
+      "babdev/pagerfanta-bundle": "^3.8"
+    },
+    "require-dev": {
+      "symfony/maker-bundle": "^1.30",
+      "symfony/phpunit-bridge": "^5.4",
+      "phpunit/phpunit": "^9.6",
+      "zenstruck/foundry": "^1.36",
+      "doctrine/doctrine-fixtures-bundle": "^3.5",
+      "symfony/panther": "^1.5"
+    },
+    "autoload": { "psr-4": { "App\\": "src/" } },
+    "autoload-dev": { "psr-4": { "App\\Tests\\": "tests/" } },
+    "scripts": {
+      "auto-scripts": {
+        "cache:clear": "symfony-cmd"
+      },
+      "post-install-cmd": ["@auto-scripts"],
+      "post-update-cmd": ["@auto-scripts"]
+    },
+    "conflict": {
+      "symfony/symfony": "*"
+    },
+    "extra": {
+      "symfony": {
+        "allow-contrib": true,
+        "require": "5.4.*"
+      }
+    }
+  }
+  
