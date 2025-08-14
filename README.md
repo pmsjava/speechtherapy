@@ -1,5 +1,3 @@
-# Logopedia (Symfony 5 + Flex, PHP 8)
-
 ## Uruchomienie (Docker)
 1. `docker-compose up -d --build`
 2. W kontenerze php: `composer install`
